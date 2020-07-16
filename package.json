@@ -1,0 +1,27 @@
+{
+  "name": "sesamnotes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack src/index.js --output bin/app.js -d --watch",
+    "build": "webpack src/index.js --output bin/app.js -p"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@isomorphic-git/lightning-fs": "^4.3.0",
+    "mithril": "^2.0.4"
+  },
+  "devDependencies": {
+    "css-loader": "^3.6.0",
+    "eslint": "^7.4.0",
+    "post-loader": "^2.0.0",
+    "style-loader": "^1.2.1",
+    "uglify-es-webpack-plugin": "^0.10.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
+  }
+}
