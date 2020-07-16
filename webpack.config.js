@@ -21,6 +21,10 @@ module.exports = {
         test: /\.css$/i,
         use: ["style-loader", "css-loader"],
       },
+      {
+        test: /\.js$/i,
+        use: "raw-loader",
+      },
     ],
   },
 };

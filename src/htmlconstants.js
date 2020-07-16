@@ -1,1 +1,1 @@
-const div = "div";
+exports.div = "div";
