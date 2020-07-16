@@ -18,8 +18,8 @@
   "devDependencies": {
     "css-loader": "^3.6.0",
     "eslint": "^7.4.0",
-    "post-loader": "^2.0.0",
-    "raw-loader": "^4.0.1",
+    "postcss-loader": "^3.0.0",
+    "postcss-prefixer": "^2.1.2",
     "style-loader": "^1.2.1",
     "uglify-es-webpack-plugin": "^0.10.0",
     "webpack": "^4.43.0",

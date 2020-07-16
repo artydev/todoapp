@@ -7,7 +7,7 @@ module.exports = {
       new UglifyEsPlugin({
         compress: {
           drop_console: true,
-         
+
         },
         mangle: {
           properties: false
@@ -19,12 +19,8 @@ module.exports = {
     rules: [
       {
         test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
-      },
-      {
-        test: /\.js$/i,
-        use: "raw-loader",
-      },
+        use: ["style-loader", "css-loader", "postcss-loader"],
+      }
     ],
   },
 };
