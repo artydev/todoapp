@@ -1,5 +1,5 @@
 /* En production toutes les classes sont préfixées 
-par un '!' par postcss */
+d'un '!' par postcss */
 .container {
     background: tan;
     color: red;
