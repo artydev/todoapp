@@ -1,12 +1,7 @@
 const m = require("mithril");
+const  { Browser } = require("./components/browser");
+const Editor = require("./components/editor");
 require("./css/style.css");
-require("./htmlconstants");
-const Browser = require("./components/browser.js");
-const Editor = require("./components/editor.js");
-const { div } = require("./htmlconstants");
-
-
-console.log(div);
 
 const view = function () {
   return [
@@ -15,6 +10,4 @@ const view = function () {
   ];
 };
 
-
-
-module.exports = { view: view };
+module.exports = { view };
