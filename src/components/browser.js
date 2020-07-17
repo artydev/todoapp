@@ -1,5 +1,6 @@
 const m = require("mithril");
 const State = require("../state");
+const  { sleep } = require("../utils/tools");
 const UtilFs = require("../utils/files");
 const { div, darkblue, style, lightblue } = require("../htmlconstants");
 
@@ -36,21 +37,25 @@ const cssContainer = { class: "bnContainer" };
 const cssTitle = {class: "bnTitle bnH1"};
 /* css region end */
 
-function initDirectories () {
-  console.log(State);
+
+async function initDirectories () {
+  await sleep(3000);
+  const lsDir =  await State.pfs.readdir("/");
+  console.log(lsDir.indexOf("notes") >= 0);
+  return lsDir;
 }
 
 const Browser = function () {
   return {
-    oninit: () =>  { 
+    oninit: async () =>  { 
       UtilFs.initFileSystem();
-      initDirectories();
+      initDirectories().then((r) => console.log(r));
     },
     view: () => [
       m(style, stylePage()),
       m(div, cssPage,
         m(div, cssContainer, [
-          m(div, cssTitle, "Bloc Notes...")
+          m(div, cssTitle, "Bloc Notes!!")
         ]))
     ]
   };
