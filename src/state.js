@@ -2,5 +2,6 @@
 
 module.exports = {
   name: "State",
-  editorVisible : false
+  editorVisible : false,
+  browser: {}
 };

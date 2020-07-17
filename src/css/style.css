@@ -1,6 +1,10 @@
-/* En production toutes les classes sont préfixées 
+/* En production toutes les classes définis dans ce fichiers sont préfixées 
 d'un '!' par postcss */
-.container {
-    background: tan;
-    color: red;
+html {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
