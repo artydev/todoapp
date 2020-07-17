@@ -1,12 +1,11 @@
 const m = require("mithril");
-const assert = require("assert");
-const LightninFS = require("@isomorphic-git/lightning-fs");
-//const { ActionBar } = require("./actionbar");
-const { div, darkblue, lightblue } = require("../htmlconstants");
+const State = require("../state");
+const UtilFs = require("../utils/files");
+const { div, darkblue, style, lightblue } = require("../htmlconstants");
 
 
 /* css region */
-const szHead = "1.5rem";
+const szHead = "1.95rem";
 const stylePage = () => /*css*/`
   .bnPage {
     background:${lightblue};
@@ -27,8 +26,8 @@ const stylePage = () => /*css*/`
   .bnTitle {
     text-align: center;
     font-size: ${szHead};
-    font-weight: 400;
-    font-family: "Segoe UI", serif;
+    font-weight: bold;
+    font-family: "Segoe UI";
     color: ${darkblue};
   }
 `;
@@ -37,33 +36,21 @@ const cssContainer = { class: "bnContainer" };
 const cssTitle = {class: "bnTitle bnH1"};
 /* css region end */
 
-/* directoty root */
-//const root = "/notes";
-
-/* current directory */
-//let currentDir = root;
-
-/* store promised file system */
-let pfs = null;
-
-/* store all files in current dir */
-//let filesCurrenDir = [];
-
-/* init pfs */
-function initFileSystem() {
-  const fs = new LightninFS();
-  pfs = fs.promises;
-  assert(pfs, "erreur pfs");
+function initDirectories () {
+  console.log(State);
 }
 
 const Browser = function () {
   return {
-    oninit: () =>  { initFileSystem(); },
+    oninit: () =>  { 
+      UtilFs.initFileSystem();
+      initDirectories();
+    },
     view: () => [
-      m("style", stylePage()),
+      m(style, stylePage()),
       m(div, cssPage,
         m(div, cssContainer, [
-          m(div, cssTitle, "Bloc Notes")
+          m(div, cssTitle, "Bloc Notes...")
         ]))
     ]
   };

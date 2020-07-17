@@ -1,7 +1,7 @@
 exports.div = "div";
 exports.h1 = "h1";
 exports.button ="button";
-
+exports.style = "style";
 
 exports.darkblue = "rgba(60, 69, 134, 1)";
 exports.mediumblue = "rgba(60, 69, 134, 0.46)";

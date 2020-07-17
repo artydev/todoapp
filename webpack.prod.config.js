@@ -12,6 +12,9 @@ module.exports = {
         },
         mangle: {
           properties: false
+        }, 
+        output: {
+          comments: false
         }
       })
     ],
