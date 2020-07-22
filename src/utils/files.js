@@ -16,13 +16,13 @@ function initDatabase() {
 async function initFileSystem() {
   initDatabase();
   try {
-    await mkDirectory("visites");
+    await mkDirectory("Visites");
     console.log("visites created");
-    await mkDirectory("personnelles");
+    await mkDirectory("Personnelles");
     console.log("personnelles created");
-    await mkDirectory("etablissement");
+    await mkDirectory("Etablissement");
     console.log("etablissements created");
-    await mkDirectory("piecesjointes");
+    await mkDirectory("Pieces jointes");
     console.log("pieces jointes created");
   }
   catch (e) {
