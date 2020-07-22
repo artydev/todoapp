@@ -5,12 +5,12 @@ module.exports = {
   editorVisible: false,
   browser: {
     rootNotes: "/notes",
-    currenDir: "/notes",
+    currentDir: "/notes",
     filesCurrentDir: [],
     initDirs: ["locales"," visites", "images"],
     dirToCreate: null,
     fileToCreate: null,
-    
+    razDB: true
   },
   // promised file system handler
   pfs: null 
