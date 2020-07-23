@@ -22,8 +22,12 @@ async function initFileSystem() {
     console.log("personnelles created");
     await mkDirectory("Etablissement");
     console.log("etablissements created");
-    await mkDirectory("Pieces jointes");
+    await mkDirectory("Pieces_jointes");
     console.log("pieces jointes created");
+    await mkDirectory("A_Propos");
+    console.log("about created");
+    await writeAboutFile();
+    console.log("write about file");
   }
   catch (e) {
     console.log("Répertoire existants....");
@@ -34,6 +38,10 @@ async function initFileSystem() {
 async function existNotes() {
   let lsRoot = await pfs.readdir("/");
   return lsRoot.includes("notes");
+}
+
+async function writeAboutFile () {
+  await pfs.writeFile("/notes/A_Propos/about.txt", "About...", "utf8");
 }
 
 async function mkDirectory(path = "") {
@@ -47,9 +55,16 @@ async function mkDirectory(path = "") {
 module.exports = {
   initFileSystem: initFileSystem,
 
+  /* Doc */
   async readDir (path) {
     return await pfs.readdir(path);
   },
+
+  async readFile (file) {
+    console.log("reading file... : " + file.filepath);
+    return await pfs.readFile(file.filepath, "utf8");
+  },
+
   async getFileStat(filepath) {
     const res = await pfs.stat(filepath);
     return { ...res, filepath };

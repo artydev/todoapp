@@ -1,9 +1,11 @@
 const m = require("mithril");
 const { Browser } = require("./components/browser");
-const Editor = require("./components/editor");
+const { Editor } = require("./components/editor");
 const { lightBlue } = require("./htmlconstants");
+const State = require("./state");
 const div = "div";
 
+console.log(State);
 
 const stylePage = () => /*css*/`
   .page {
@@ -24,17 +26,26 @@ const stylePage = () => /*css*/`
   }
 `;
 
-const view = function () {
-  return [
-    m("style", stylePage()),
-    m(div, { class: "page" },
-      m(div, { class: "container" }, [
-        m(Browser),
-        m(Editor)
-      ])
-    )];
-};
+let value = "YYYY";
 
-module.exports = { view };
+//State.editor.setEditorValue("ZZZZZ")
+//State.editor.setEditorValue()
 
+
+function App() {
+ 
+  const view = function () {
+    return [
+      m("style", stylePage()),
+      m(div, { class: "page" },
+        m(div, { class: "container" }, [
+          m(Browser),
+          m(Editor, { data: value })
+        ])
+      )];
+  };
+  return { view };
+}
+
+module.exports = { App };
 

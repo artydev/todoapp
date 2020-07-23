@@ -3,6 +3,7 @@
 module.exports = {
   name: "State",
   editorVisible: false,
+  editor: null,
   browser: {
     rootNotes: "/notes",
     currentDir: "/notes",

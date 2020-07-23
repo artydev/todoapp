@@ -3,29 +3,37 @@ const State = require("../state");
 const UtilFs = require("../utils/files");
 const { fileSVG, dirSVG } = require("../assets/svgicons");
 const { div, style, ul, darkblue, li } = require("../htmlconstants");
-
 const AppTitle = "Bloc Notes";
 const root = "/notes";
 
+// eslint-disable-next-line no-undef
+console.log(Jodit); 
+
 let filesStats = [];
 
-function updatePath(path) {
+function updateCurrentPath(path) {
   State.browser.currentDir = path;
 }
 
-function getCurrenPath() {
-  return `Répertoire :  ${State.browser.currentDir}`;
+function showCurrenPath() {
+  return m.trust(`<b>Répertoire :</b>  ${State.browser.currentDir}`);
 }
 
 function handleFile(file) {
+  updateCurrentPath(file.filepath);
   if (file.type == "dir") {
-    updatePath(file.filepath);
     getFilesStats(file.filepath).then(m.redraw);
+    return;
   }
+  if (file.type == "file") {
+    UtilFs.readFile(file).then(res => console.log(res));
+    State.editorVisible = true;
+  }
+  m.redraw();
 }
 
 function displayRoot() {
-  updatePath(root);
+  updateCurrentPath(root);
   getFilesStats(root).then(m.redraw);
 }
 
@@ -37,16 +45,15 @@ const fileItem = (file) => {
     m(li, { class: "brlineitem", onclick: () => handleFile(file) }, [
       m(div, { class: "brlibitem" },
         m.trust(svgIcon(file.type)),
-        m(div, fileName)
+        m(div, {class: "brfilename"}, fileName)
       ),
       m(div, { class: "brdate" }, dateCreation.toLocaleDateString())
     ]),
-    //m(hr, {class: "brhr"} )
   ];
 };
 
 let getFilesStats = async (dir) => {
-  updatePath(dir);
+  updateCurrentPath(dir);
   const fileNames = await UtilFs.readDir(dir);
   filesStats = await UtilFs.getAllFilesStat(fileNames);
   return filesStats;
@@ -60,7 +67,6 @@ const FoldersDisplay = function () {
     )
   };
 };
-
 
 const styleBrowser = () => /*css*/`
   .brcontainer {
@@ -80,26 +86,20 @@ const styleBrowser = () => /*css*/`
   }
   .brdate {
     font-size: 0.92rem;
-    position: relative;
-    top: -1px;
   }
   .brlineitem {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin:0;
-    margin-top: 4px;
-    padding: 0;
-    height: 2.5rem;
-    border-bottom: 1px solid ${darkblue};
-    cursor: pointer;
+    border-bottom: 1px solid rgba(60, 69, 134, .23);
+    cursor: pointer;    
   }
   .brlibitem {
     display: flex;
     cursor: pointer;
     margin:0;
     position: relative;
-    top: 1px;
+    top:2px;
   }
   .brul {
     margin: 0;
@@ -109,27 +109,27 @@ const styleBrowser = () => /*css*/`
   .brcurpath {
     cursor: pointer;
   }
-  .brhr {
-    border: none;
-    padding:0;
-    margin:0;
-    border-bottom: 1px solid ${darkblue};
+  .brfilename {
+    font-size: 0.980rem;
+    font-weight: 400;
   }
 `;
 
 const Browser = function () {
   const propsCurpath = {
     class: "brcurpath",
-    title: "retour racine", onclick: displayRoot
+    title: "retour racine",
+    onclick: displayRoot
   };
   return {
     view: () => [
       m(style, styleBrowser()),
       m(div, { class: "brcontainer" },
         m(div, { class: "brtitle" }, AppTitle),
-        m(div, propsCurpath, getCurrenPath()),
+        m(div, propsCurpath, showCurrenPath()),
         m(FoldersDisplay)
-      )
+      ),
+      m("hr"),
     ]
   };
 };
