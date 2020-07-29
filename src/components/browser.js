@@ -1,72 +1,128 @@
 const m = require("mithril");
+const { ActionBar } = require("./actionbar");
 const State = require("../state");
 const UtilFs = require("../utils/files");
-const { fileSVG, dirSVG } = require("../assets/svgicons");
+const { fileSVG, dirSVG, trashSVG } = require("../assets/svgicons");
 const { div, style, ul, darkblue, li } = require("../htmlconstants");
 const AppTitle = "Bloc Notes";
 const root = "/notes";
 
-// eslint-disable-next-line no-undef
-console.log(Jodit); 
+/* Composant principal */
+const Browser = function () {
+  const propsCurpath = {
+    class: "brcurpath",
+    title: "retour racine",
+    onclick: displayRoot
+  };
+  return {
+    view: () => [
+      m(style, styleBrowser()),
+      m(div, { class: "brcontainer" },
+        m(div, { class: "brtitle" }, AppTitle), // à deplacer dans app
+        m(div, propsCurpath, showCurrentPath()),
+        m(ActionBar),
+        m(FoldersDisplay)
+      )
+    ]
+  };
+};
 
-let filesStats = [];
+exports.Browser = Browser;
 
-function updateCurrentPath(path) {
-  State.browser.currentDir = path;
-}
 
-function showCurrenPath() {
-  return m.trust(`<b>Répertoire :</b>  ${State.browser.currentDir}`);
-}
+/* Composant affichant les fichiers du répertoire courant */
+const FoldersDisplay = function () {
+  /* On affiche la liste des fichiers si aucun d'eux n'est selectionnés */
+  const consultMode = () => {
+    return !State.editorVisible;
+  };
+  return {
+    oninit: () => getFilesStats("/notes").then(fstats => {
+      State.browser.filesCurrentDir = fstats;
+      m.redraw();
+    }),
+    view: () => m(div, { id: "fileslist" },
+      consultMode() && m(ul, { class: "brul" }, State.browser.filesCurrentDir.map(fileItem)),      
+    )
+  };
+};
 
-function handleFile(file) {
-  updateCurrentPath(file.filepath);
-  if (file.type == "dir") {
-    getFilesStats(file.filepath).then(m.redraw);
-    return;
-  }
-  if (file.type == "file") {
-    UtilFs.readFile(file).then(res => console.log(res));
-    State.editorVisible = true;
-  }
-  m.redraw();
-}
+/* Récupère les meta données d'un repertoire ou fichier */
+let getFilesStats = async (dir) => {
+  updateCurrentPath(dir);
+  const fileNames = await UtilFs.readDir(dir);
+  let filesStats = await UtilFs.getAllFilesStat(fileNames);
+  return filesStats;
+};
 
-function displayRoot() {
-  updateCurrentPath(root);
-  getFilesStats(root).then(m.redraw);
-}
+/* Composant affichant une ligne de fichier */
+/* Les icônes dont affichées dynamiquement */
+const fileName = (file) => file.filepath.split("/").slice(-1)[0];
 
 const fileItem = (file) => {
   const dateCreation = new Date(file.mtimeMs);
-  const fileName = file.filepath.split("/").slice(-1)[0];
   const svgIcon = (type) => type == "dir" ? dirSVG() : fileSVG();
   return [
-    m(li, { class: "brlineitem", onclick: () => handleFile(file) }, [
-      m(div, { class: "brlibitem" },
+    m(li, { class: "brlineitem" }, [
+      m(div, { class: "brlibitem", onclick: (e) => handleFile(file, e) },
         m.trust(svgIcon(file.type)),
-        m(div, {class: "brfilename"}, fileName)
+        m(div, { class: "brfilename" }, fileName(file))
       ),
-      m(div, { class: "brdate" }, dateCreation.toLocaleDateString())
+      m(div, {style: "display: flex;align-items:center;"},
+        [
+          m("div", { class: "brdate" }, dateCreation.toLocaleDateString()),
+          m("div", { class: "brtrashsvg" },  m.trust(trashSVG()))
+        ]),    
     ]),
   ];
 };
 
-let getFilesStats = async (dir) => {
-  updateCurrentPath(dir);
-  const fileNames = await UtilFs.readDir(dir);
-  filesStats = await UtilFs.getAllFilesStat(fileNames);
-  return filesStats;
-};
+/* Met à jour l'indication du repértoire courant */
+function updateCurrentPath(path) {
+  State.editorVisible = false;
+  State.browser.currentDir = path;
+  State.edition.currentfile = "";
+  m.redraw();
+}
 
-const FoldersDisplay = function () {
-  return {
-    oninit: () => getFilesStats("/notes").then(f => { filesStats = f; m.redraw(); }),
-    view: () => m(div,
-      m(ul, { class: "brul" }, filesStats.map(fileItem)),
-    )
-  };
-};
+/* Affiche le répertoire courant */
+function showCurrentPath() {
+  return m.trust(`<b>Répertoire :</b>  ${State.browser.currentDir}`);
+}
+
+/* Excuter lors d'un click sur un fichier ou prepertoire */
+function handleFile(file) {
+  /* si repertoire */
+  if (file.type == "dir") {
+    State.browser.filesCurrentDir = [];
+    m.redraw();
+    //updateCurrentPath(file.filepath);
+    getFilesStats(file.filepath).then((f) => {
+      State.browser.filesCurrentDir = f;
+      m.redraw();
+    });
+    return;
+  }
+  /*, si fichier */
+  if (file.type == "file") {
+    UtilFs.readFile(file).then(res => {
+      State.edition.editmode = true;
+      State.editorVisible = true;
+      State.editor.setEditorValue(res);
+      State.edition.currentfile = fileName(file);
+      m.redraw();
+    });
+  }
+  m.redraw();
+}
+/* Affiche le répertoire racine */
+function displayRoot() {
+  updateCurrentPath(root);
+  getFilesStats(root).then((f) => {
+    State.browser.filesCurrentDir = f;
+    m.redraw();
+  });
+}
 
 const styleBrowser = () => /*css*/`
   .brcontainer {
@@ -92,7 +148,7 @@ const styleBrowser = () => /*css*/`
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid rgba(60, 69, 134, .23);
-    cursor: pointer;    
+  
   }
   .brlibitem {
     display: flex;
@@ -103,7 +159,6 @@ const styleBrowser = () => /*css*/`
   }
   .brul {
     margin: 0;
-    margin-top: 10px;
     padding: 0;
   }
   .brcurpath {
@@ -113,26 +168,12 @@ const styleBrowser = () => /*css*/`
     font-size: 0.980rem;
     font-weight: 400;
   }
+  .brtrashsvg {
+    width: 16px;
+    height: 16px;
+    fill: darkorange;
+    position: relative;
+    top: -2px;
+    margin-left: 15px;
+  }
 `;
-
-const Browser = function () {
-  const propsCurpath = {
-    class: "brcurpath",
-    title: "retour racine",
-    onclick: displayRoot
-  };
-  return {
-    view: () => [
-      m(style, styleBrowser()),
-      m(div, { class: "brcontainer" },
-        m(div, { class: "brtitle" }, AppTitle),
-        m(div, propsCurpath, showCurrenPath()),
-        m(FoldersDisplay)
-      ),
-      m("hr"),
-    ]
-  };
-};
-
-exports.Browser = Browser;
-

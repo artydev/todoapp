@@ -2,16 +2,16 @@
 
 module.exports = {
   name: "State",
-  editorVisible: false,
   editor: null,
+  editorVisible: false,
+  edition: {
+    currentfile: ""
+  },
   browser: {
     rootNotes: "/notes",
     currentDir: "/notes",
     filesCurrentDir: [],
-    initDirs: ["locales"," visites", "images"],
-    dirToCreate: null,
-    fileToCreate: null,
-    razDB: true
+    razDB: false
   },
   // promised file system handler
   pfs: null 

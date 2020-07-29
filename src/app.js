@@ -1,14 +1,30 @@
 const m = require("mithril");
-const { Browser } = require("./components/browser");
+const { Browser} = require("./components/browser");
 const { Editor } = require("./components/editor");
 const { lightBlue } = require("./htmlconstants");
 const State = require("./state");
 const div = "div";
-
 console.log(State);
 
+function App() {
+  const classEditor = () => State.editorVisible ? "appEditorVisible" : "appEditorHidden";
+  const view = function () {
+    return [
+      m("style", stylePage()),
+      m(div, { class: "appPage" },
+        m(div, { class: "appContainer" }, [
+          m(Browser),
+          m(div, { class: classEditor() }, m(Editor))
+        ])
+      )];
+  };
+  return { view };
+}
+
+module.exports = { App };
+
 const stylePage = () => /*css*/`
-  .page {
+  .appPage {
     background: ${lightBlue};
     margin:0;
     padding: 0;
@@ -18,34 +34,16 @@ const stylePage = () => /*css*/`
     width: 100%;
     height: 100vh;
   }
-  .container {
+  .appContainer {
     width: 75%;
     margin: 0 auto;
     max-width: 960px;
     height: 100vh;
   }
+  .appEditorVisible {
+    display: block;
+  }
+  .appEditorHidden {
+    display: none;
+  }
 `;
-
-let value = "YYYY";
-
-//State.editor.setEditorValue("ZZZZZ")
-//State.editor.setEditorValue()
-
-
-function App() {
- 
-  const view = function () {
-    return [
-      m("style", stylePage()),
-      m(div, { class: "page" },
-        m(div, { class: "container" }, [
-          m(Browser),
-          m(Editor, { data: value })
-        ])
-      )];
-  };
-  return { view };
-}
-
-module.exports = { App };
-

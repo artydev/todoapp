@@ -16,6 +16,10 @@ function initDatabase() {
 async function initFileSystem() {
   initDatabase();
   try {
+    await mkDirectory("A_Propos");
+    console.log("about created");
+    await writeAboutFile();
+    console.log("write about file");
     await mkDirectory("Visites");
     console.log("visites created");
     await mkDirectory("Personnelles");
@@ -24,10 +28,7 @@ async function initFileSystem() {
     console.log("etablissements created");
     await mkDirectory("Pieces_jointes");
     console.log("pieces jointes created");
-    await mkDirectory("A_Propos");
-    console.log("about created");
-    await writeAboutFile();
-    console.log("write about file");
+
   }
   catch (e) {
     console.log("Répertoire existants....");
@@ -41,10 +42,20 @@ async function existNotes() {
 }
 
 async function writeAboutFile () {
-  await pfs.writeFile("/notes/A_Propos/about.txt", "About...", "utf8");
+  await pfs.writeFile("/notes/A_Propos/about1", "", "utf8");
+  await pfs.writeFile("/notes/A_Propos/about2", "", "utf8");
+  await pfs.writeFile("/notes/A_Propos/about3", "", "utf8");
+}
+
+async function createFile(filename, content="default") {
+  const filepath = `${State.browser.currentDir}/${filename}`;
+  pfs.writeFile(filepath, content).then( () => {
+    alert("fichier enregistré");
+  });  
 }
 
 async function mkDirectory(path = "") {
+  console.log("Makink dir "  +  path);
   let notesExist = await existNotes();
   if (!notesExist) {
     await pfs.mkdir("/notes");
@@ -54,6 +65,10 @@ async function mkDirectory(path = "") {
 
 module.exports = {
   initFileSystem: initFileSystem,
+
+  mkDirectory: mkDirectory,
+
+  createFile: createFile,
 
   /* Doc */
   async readDir (path) {
